@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-export const instant = false;
+
 export default function EditProfilePage() {
   const supabase = createClient();
   const router = useRouter();
