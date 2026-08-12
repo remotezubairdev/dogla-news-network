@@ -1,10 +1,37 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function LiveVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [soundOn, setSoundOn] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {
+            // Autoplay may be blocked by the browser.
+          });
+        } else {
+          video.pause();
+        }
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const toggleSound = () => {
     const video = videoRef.current;
@@ -32,20 +59,15 @@ export default function LiveVideo() {
         playsInline
         preload="metadata"
       >
-        <source
-          src="/videos/who-we-are.mp4"
-          type="video/mp4"
-        />
+        <source src="/videos/who-we-are.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
-      {/* LIVE indicator */}
       <div className="absolute left-4 top-4 flex items-center gap-2 rounded bg-black/70 px-3 py-1.5 text-xs font-black text-white backdrop-blur">
         <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
         LIVE
       </div>
 
-      {/* Sound button */}
       <button
         type="button"
         onClick={toggleSound}
@@ -55,8 +77,7 @@ export default function LiveVideo() {
         {soundOn ? "🔊 Sound On" : "🔇 Sound Off"}
       </button>
 
-      {/* Lower third */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-4 pb-4 pt-12 pointer-events-none">
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-4 pb-4 pt-12">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-red-400">
           SPECIAL REPORT
         </p>
