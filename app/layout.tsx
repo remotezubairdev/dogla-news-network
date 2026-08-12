@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "DNN",
   description: "Dogla News Network official website",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 const geistSans = Geist({
