@@ -10,6 +10,8 @@ type ProfilePageProps = {
   }>;
 };
 
+export const instant = false;
+
 export default async function UserProfilePage({
   params,
 }: ProfilePageProps) {
