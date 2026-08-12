@@ -57,15 +57,9 @@ export default function Comments({
       `)
       .single();
 
-    if (error) {
-      console.error("COMMENT ERROR:", error);
-      setLoading(false);
-      return;
-    }
-
-    if (data) {
+    if (!error && data) {
       const profile = Array.isArray(data.profiles)
-        ? data.profiles[0]
+        ? data.profiles[0] ?? null
         : data.profiles;
 
       const newComment: Comment = {
@@ -82,6 +76,10 @@ export default function Comments({
 
       setComments((current) => [...current, newComment]);
       setContent("");
+    }
+
+    if (error) {
+      console.error("COMMENT ERROR:", error);
     }
 
     setLoading(false);
