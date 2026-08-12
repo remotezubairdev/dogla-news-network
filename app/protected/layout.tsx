@@ -1,6 +1,8 @@
 import Sidebar from "@/components/sidebar";
 import Trending from "@/components/trending";
 
+export const instant = false;
+
 export default function ProtectedLayout({
   children,
 }: {
