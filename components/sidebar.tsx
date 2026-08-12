@@ -28,28 +28,12 @@ export default function Sidebar() {
           <span>👤</span>
           My Profile
         </Link>
-
-        <div className="my-5 border-t border-slate-200" />
-
-        <p className="px-4 pb-2 text-xs font-bold uppercase tracking-widest text-slate-400">
-          Categories
-        </p>
-
-        <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-white">
-          📰 News
-        </button>
-
-        <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-white">
-          🌍 Local
-        </button>
-
-        <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-white">
-          💻 Technology
-        </button>
-
-        <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-white">
-          ⚽ Sports
-        </button>
+        <Link
+          href="/following"
+          className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-white hover:text-[#0B1F3A]"
+        >
+          Following Reporters
+        </Link>
 
       </div>
     </aside>

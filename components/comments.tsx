@@ -8,11 +8,10 @@ type Comment = {
   content: string;
   user_id: string;
   profiles: {
-    username: string;
+    username: string | null;
     full_name: string | null;
   } | null;
 };
-
 type CommentsProps = {
   postId: string;
   userId: string;

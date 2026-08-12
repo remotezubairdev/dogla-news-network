@@ -105,8 +105,7 @@ export default async function Trending() {
           </p>
 
           <p className="mt-2 text-sm leading-6 text-blue-100">
-            A place for your community to share stories,
-            ideas and conversations.
+            A place for dogla news network members to share breaking news.
           </p>
 
         </div>

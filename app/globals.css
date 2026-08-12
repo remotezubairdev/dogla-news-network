@@ -2,6 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: #f5f7fa;
+  --foreground: #0b1f3a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
-  @apply text-black
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+html {
+  background: #f5f7fa;
+}
+
+body {
+  background: #f5f7fa;
+  color: #0b1f3a;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Prevent browser dark-mode/autofill styling */
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+input,
+textarea,
+select {
+  color: #0b1f3a;
+  background-color: #ffffff;
+  color-scheme: light;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+/* Browser autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0b1f3a;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+  box-shadow: 0 0 0px 1000px #ffffff inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Buttons */
+button {
+  color: inherit;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+}
+
+/* Selection */
+::selection {
+  background: #2f80ed;
+  color: #ffffff;
 }
