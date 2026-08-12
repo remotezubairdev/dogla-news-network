@@ -63,7 +63,7 @@ export default async function HomePage() {
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/auth/signup"
+                href="/auth/sign-up"
                 className="rounded-xl bg-[#2F80ED] px-7 py-3.5 text-center text-sm font-bold text-white shadow-sm transition hover:bg-[#246fd1]"
               >
                 Join Dogla
@@ -154,7 +154,7 @@ export default async function HomePage() {
           </p>
 
           <Link
-            href="/auth/signup"
+            href="/auth/sign-up"
             className="mt-8 inline-flex rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-[#0B1F3A] transition hover:bg-slate-100"
           >
             Create your account
@@ -179,7 +179,7 @@ export default async function HomePage() {
             <Link href="/auth/login" className="hover:text-[#2F80ED]">
               Sign in
             </Link>
-            <Link href="/auth/signup" className="hover:text-[#2F80ED]">
+            <Link href="/auth/sign-up" className="hover:text-[#2F80ED]">
               Sign up
             </Link>
           </div>
