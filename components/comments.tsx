@@ -12,6 +12,7 @@ type Comment = {
     full_name: string | null;
   } | null;
 };
+
 type CommentsProps = {
   postId: string;
   userId: string;
@@ -25,7 +26,7 @@ export default function Comments({
 }: CommentsProps) {
   const supabase = createClient();
 
-  const [comments, setComments] = useState(initialComments);
+  const [comments, setComments] = useState<Comment[]>(initialComments);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -57,8 +58,21 @@ export default function Comments({
       .single();
 
     if (!error && data) {
-      setComments((current) => [...current, data]);
+      const newComment: Comment = {
+        id: data.id,
+        content: data.content,
+        user_id: data.user_id,
+        profiles: Array.isArray(data.profiles)
+          ? data.profiles[0] ?? null
+          : data.profiles,
+      };
+
+      setComments((current) => [...current, newComment]);
       setContent("");
+    }
+
+    if (error) {
+      console.error("COMMENT ERROR:", error);
     }
 
     setLoading(false);
@@ -66,7 +80,6 @@ export default function Comments({
 
   return (
     <div className="mt-5 border-t pt-4">
-
       {/* Existing comments */}
       <div className="space-y-3">
         {comments.map((comment) => (
@@ -102,7 +115,7 @@ export default function Comments({
           disabled={loading}
           className="rounded-lg bg-black px-4 py-2 text-sm text-white"
         >
-          Comment
+          {loading ? "..." : "Comment"}
         </button>
       </form>
     </div>

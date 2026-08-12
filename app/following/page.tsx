@@ -44,7 +44,6 @@ export default async function FollowingPage() {
     redirect("/auth/login");
   }
 
-  // Get everyone the current user follows.
   const { data: follows, error: followsError } = await supabase
     .from("follows")
     .select("following_id")
@@ -84,10 +83,8 @@ export default async function FollowingPage() {
           content,
           user_id,
           profiles!comments_user_id_fkey (
-            id,
             username,
-            full_name,
-            avatar_url
+            full_name
           )
         )
       `)
@@ -128,7 +125,6 @@ export default async function FollowingPage() {
       <Navbar />
 
       <div className="mx-auto max-w-3xl px-4 py-8">
-        {/* Page header */}
         <div className="mb-6 border-b-4 border-[#0B1F3A] pb-5">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-red-600">
             YOUR NETWORK
@@ -139,7 +135,6 @@ export default async function FollowingPage() {
               <h1 className="text-3xl font-black tracking-tight">
                 Following
               </h1>
-
               <p className="mt-1 text-sm text-slate-500">
                 Posts from people you follow.
               </p>
@@ -154,7 +149,6 @@ export default async function FollowingPage() {
           </div>
         </div>
 
-        {/* Feed */}
         <div className="space-y-4">
           {normalizedPosts.map((post) => (
             <article
@@ -162,7 +156,6 @@ export default async function FollowingPage() {
               key={post.id}
               className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
             >
-              {/* Post header */}
               <div className="border-b border-slate-100 px-6 py-4">
                 <div className="flex items-center gap-3">
                   <Link href={`/profiles/${post.profiles?.id}`}>
@@ -208,7 +201,6 @@ export default async function FollowingPage() {
                 </div>
               </div>
 
-              {/* Post content */}
               <div className="p-6">
                 <p className="whitespace-pre-wrap text-[16px] leading-7 text-slate-700">
                   {post.content}
@@ -253,15 +245,11 @@ export default async function FollowingPage() {
                 No posts yet
               </h2>
 
-              {followingIds.length === 0 ? (
-                <p className="mt-2 text-sm text-slate-500">
-                  Follow some people to see their posts here.
-                </p>
-              ) : (
-                <p className="mt-2 text-sm text-slate-500">
-                  The people you follow haven't posted anything yet.
-                </p>
-              )}
+              <p className="mt-2 text-sm text-slate-500">
+                {followingIds.length === 0
+                  ? "Follow some people to see their posts here."
+                  : "The people you follow haven't posted anything yet."}
+              </p>
 
               <Link
                 href="/protected"

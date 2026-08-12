@@ -78,11 +78,16 @@ type Profile = {
   avatar_url: string | null;
 };
 
+type CommentProfile = {
+  username: string | null;
+  full_name: string | null;
+};
+
 type CommentData = {
   id: string;
   content: string;
   user_id: string;
-  profiles: Profile | null;
+  profiles: CommentProfile | null;
 };
 
 type PostData = {
