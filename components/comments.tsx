@@ -58,31 +58,25 @@ export default function Comments({
       .single();
 
     if (!error && data) {
-  const profile = Array.isArray(data.profiles)
-    ? data.profiles[0] ?? null
-    : data.profiles;
+      const profile = Array.isArray(data.profiles)
+        ? data.profiles[0] ?? null
+        : data.profiles;
 
-  const normalizedProfile: Comment["profiles"] = profile
-    ? {
-        username: profile.username,
-        full_name: profile.full_name,
-      }
-    : null;
+      const newComment: Comment = {
+        id: data.id,
+        content: data.content,
+        user_id: data.user_id,
+        profiles: profile
+          ? {
+              username: profile.username,
+              full_name: profile.full_name,
+            }
+          : null,
+      };
 
-  const newComment: Comment = {
-    id: data.id,
-    content: data.content,
-    user_id: data.user_id,
-    profiles: normalizedProfile,
-  };
-
-  setComments((current: Comment[]) => [
-    ...current,
-    newComment,
-  ]);
-
-  setContent("");
-}
+      setComments((current) => [...current, newComment]);
+      setContent("");
+    }
 
     if (error) {
       console.error("COMMENT ERROR:", error);
