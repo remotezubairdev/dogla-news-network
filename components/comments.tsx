@@ -63,18 +63,18 @@ export default function Comments({
         : data.profiles;
 
       const newComment: Comment = {
-        id: data.id,
-        content: data.content,
-        user_id: data.user_id,
-        profiles: profile
-          ? {
-              username: profile.username,
-              full_name: profile.full_name,
-            }
-          : null,
-      };
+  id: data.id,
+  content: data.content,
+  user_id: data.user_id,
+  profiles: Array.isArray(data.profiles)
+    ? data.profiles[0] ?? null
+    : data.profiles,
+};
 
-      setComments((current) => [...current, newComment]);
+setComments((current: Comment[]) => [
+  ...current,
+  newComment,
+]);
       setContent("");
     }
 

@@ -151,7 +151,8 @@ export default async function ProtectedPage() {
     console.error("POSTS ERROR:", error);
   }
 
-  const normalizedPosts: PostData[] = (posts ?? []).map((post) => ({
+  const normalizedPosts: PostData[] = (posts ?? []).map(
+  (post): PostData => ({
     id: post.id,
     content: post.content,
     image_url: post.image_url,
@@ -162,27 +163,31 @@ export default async function ProtectedPage() {
       ? post.profiles[0] ?? null
       : post.profiles,
 
-    likes: post.likes ?? [],
+    likes: (post.likes ?? []).map((like) => ({
+      user_id: like.user_id,
+    })),
 
-    comments: (post.comments ?? []).map((comment) => ({
-      id: comment.id,
-      content: comment.content,
-      user_id: comment.user_id,
-
-      profiles: (() => {
+    comments: (post.comments ?? []).map(
+      (comment): CommentData => {
         const profile = Array.isArray(comment.profiles)
           ? comment.profiles[0] ?? null
           : comment.profiles;
 
-        return profile
-          ? {
-              username: profile.username,
-              full_name: profile.full_name,
-            }
-          : null;
-      })(),
-    })),
-  }));
+        return {
+          id: comment.id,
+          content: comment.content,
+          user_id: comment.user_id,
+          profiles: profile
+            ? {
+                username: profile.username,
+                full_name: profile.full_name,
+              }
+            : null,
+        };
+      }
+    ),
+  })
+);
 
   return (
   <main className="min-h-screen bg-[#F5F7FA] text-[#0B1F3A]">
