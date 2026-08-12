@@ -57,22 +57,31 @@ export default function Comments({
       `)
       .single();
 
-    if (!error && data) {
+    if (error) {
+      console.error("COMMENT ERROR:", error);
+      setLoading(false);
+      return;
+    }
+
+    if (data) {
+      const profile = Array.isArray(data.profiles)
+        ? data.profiles[0]
+        : data.profiles;
+
       const newComment: Comment = {
         id: data.id,
         content: data.content,
         user_id: data.user_id,
-        profiles: Array.isArray(data.profiles)
-          ? data.profiles[0] ?? null
-          : data.profiles,
+        profiles: profile
+          ? {
+              username: profile.username,
+              full_name: profile.full_name,
+            }
+          : null,
       };
 
       setComments((current) => [...current, newComment]);
       setContent("");
-    }
-
-    if (error) {
-      console.error("COMMENT ERROR:", error);
     }
 
     setLoading(false);
