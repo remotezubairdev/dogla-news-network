@@ -151,38 +151,56 @@ export default async function ProtectedPage() {
     console.error("POSTS ERROR:", error);
   }
 
-  const normalizedPosts: PostData[] = (posts ?? []).map((post) => ({
+  const normalizedPosts: PostData[] = (posts ?? []).map((post): PostData => {
+  const profile = Array.isArray(post.profiles)
+    ? post.profiles[0] ?? null
+    : post.profiles;
+
+  const normalizedProfile: Profile | null = profile
+    ? {
+        id: profile.id,
+        username: profile.username,
+        full_name: profile.full_name,
+        avatar_url: profile.avatar_url,
+      }
+    : null;
+
+  const normalizedComments: CommentData[] = (post.comments ?? []).map(
+    (comment): CommentData => {
+      const commentProfile = Array.isArray(comment.profiles)
+        ? comment.profiles[0] ?? null
+        : comment.profiles;
+
+      const normalizedCommentProfile: CommentProfile | null =
+        commentProfile
+          ? {
+              username: commentProfile.username,
+              full_name: commentProfile.full_name,
+            }
+          : null;
+
+      return {
+        id: comment.id,
+        content: comment.content,
+        user_id: comment.user_id,
+        profiles: normalizedCommentProfile,
+      };
+    }
+  );
+
+  return {
     id: post.id,
     content: post.content,
     image_url: post.image_url,
     created_at: post.created_at,
     user_id: post.user_id,
-
-    profiles: Array.isArray(post.profiles)
-      ? post.profiles[0] ?? null
-      : post.profiles,
-
-    likes: post.likes ?? [],
-
-    comments: (post.comments ?? []).map((comment) => ({
-      id: comment.id,
-      content: comment.content,
-      user_id: comment.user_id,
-
-      profiles: (() => {
-        const profile = Array.isArray(comment.profiles)
-          ? comment.profiles[0] ?? null
-          : comment.profiles;
-
-        return profile
-          ? {
-              username: profile.username,
-              full_name: profile.full_name,
-            }
-          : null;
-      })(),
+    profiles: normalizedProfile,
+    likes: (post.likes ?? []).map((like) => ({
+      user_id: like.user_id,
     })),
-  }));
+    comments: normalizedComments,
+  };
+});
 
   return (
   <main className="min-h-screen bg-[#F5F7FA] text-[#0B1F3A]">
