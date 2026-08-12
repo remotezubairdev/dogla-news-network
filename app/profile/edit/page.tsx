@@ -1,9 +1,9 @@
 "use client";
-
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-
+export const instant = false;
 export default function EditProfilePage() {
   const supabase = createClient();
   const router = useRouter();
@@ -145,9 +145,11 @@ const [avatarFile, setAvatarFile] = useState<File | null>(null);
             <div className="flex items-center gap-4">
 
                 {avatarUrl ? (
-                <img
+                <Image
                     src={avatarUrl}
                     alt="Profile"
+                    width={20}
+                    height={20}
                     className="h-20 w-20 rounded-full object-cover"
                 />
                 ) : (
