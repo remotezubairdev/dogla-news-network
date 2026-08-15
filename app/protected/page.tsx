@@ -407,7 +407,9 @@ export default async function ProtectedPage() {
                   {/* Avatar */}
                   <Link href={`/profiles/${post.profiles?.id}`}>
                     {post.profiles?.avatar_url ? (
-                      <img
+                      <Image
+                        width={11}
+                        height={11}
                         src={post.profiles.avatar_url}
                         alt=""
                         className="h-11 w-11 rounded-full object-cover"
@@ -428,7 +430,7 @@ export default async function ProtectedPage() {
                   {/* Author */}
                   <div className="min-w-0">
                     <Link
-                      href={`/profiles/${post.profiles?.id}`}
+                      href={`/profile/${post.profiles?.id}`}
                       className="block hover:opacity-80"
                     >
                       <p className="truncate font-bold text-[#0B1F3A]">
