@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+import RefreshFeedBanner from "@/components/refresh-feed-banner";
 import Image from "next/image";
 import LikeButton from "@/components/like-button";
 import Link from "next/link";
@@ -207,6 +208,8 @@ export default async function ProtectedPage() {
     <main className="min-h-screen bg-[#F5F7FA] text-[#0B1F3A]">
       <Navbar />
 
+      <RefreshFeedBanner />
+
       {/* BREAKING NEWS TICKER */}
       <div className="w-full overflow-hidden border-b border-red-200 bg-red-600 text-white">
         <div className="flex h-9 items-center">
@@ -408,9 +411,7 @@ export default async function ProtectedPage() {
                   {/* Avatar */}
                   <Link href={`/profile/${post.profiles?.id}`}>
                     {post.profiles?.avatar_url ? (
-                      <Image
-                        width={44}
-                        height={44}
+                      <img
                         src={post.profiles.avatar_url}
                         alt=""
                         className="h-11 w-11 rounded-full object-cover"
