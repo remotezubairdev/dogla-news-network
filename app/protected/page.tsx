@@ -191,6 +191,21 @@ type PostData = {
     user_id: string;
   }[];
   comments: CommentData[];
+  post_type: "report" | "poll";
+
+polls: {
+  id: string;
+  question: string;
+  poll_options: {
+    id: string;
+    option_text: string;
+    position: number;
+    poll_votes: {
+      id: string;
+      user_id: string;
+    }[];
+  }[];
+}[] | null;
 };
 
 export default async function ProtectedPage() {
