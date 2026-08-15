@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+import Poll from "@/components/poll";
 import RefreshFeedBanner from "@/components/refresh-feed-banner";
 import Image from "next/image";
 import LikeButton from "@/components/like-button";
