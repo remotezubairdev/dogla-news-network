@@ -221,52 +221,52 @@ export default async function ProtectedPage() {
   }
 
   const { data: posts, error } = await supabase
-    .from("posts")
-    .select(`
+  .from("posts")
+  .select(`
+    id,
+    content,
+    image_url,
+    created_at,
+    user_id,
+    post_type,
+
+    profiles!posts_user_id_fkey (
+      id,
+      username,
+      full_name,
+      avatar_url
+    ),
+
+    likes (
+      user_id
+    ),
+
+    comments (
       id,
       content,
-      image_url,
-      created_at,
       user_id,
-      post_type,
-
-      profiles!posts_user_id_fkey (
-        id,
+      profiles!comments_user_id_fkey (
         username,
-        full_name,
-        avatar_url
-      ),
+        full_name
+      )
+    ),
 
-      likes (
-        user_id
-      ),
-
-      comments (
+    polls (
+      id,
+      question,
+      poll_options (
         id,
-        content,
-        user_id,
-        profiles!comments_user_id_fkey (
-          username,
-          full_name
+        option_text,
+        position,
+        poll_votes (
+          id,
+          user_id
         )
       )
-
-      polls (
-  id,
-  question,
-  poll_options (
-    id,
-    option_text,
-    position,
-    poll_votes (
-      id,
-      user_id
     )
-  )
-),
-    `)
-    .order("created_at", { ascending: false })
-    .limit(10);
+  `)
+  .order("created_at", { ascending: false })
+  .limit(10);
 
   if (error) {
     console.error("POSTS ERROR:", error);
@@ -313,7 +313,7 @@ export default async function ProtectedPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#F5F7FA] text-[#0B1F3A]">
+    <main className="px-8 py-4 pb-24 md:pb-0 min-h-screen bg-[#F5F7FA] text-[#0B1F3A]">
       <Navbar />
 
       <RefreshFeedBanner />
@@ -460,7 +460,7 @@ export default async function ProtectedPage() {
         </div>
 
         {/* CREATE POST */}
-        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div id="create" className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-5">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
