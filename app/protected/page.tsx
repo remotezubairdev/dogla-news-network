@@ -575,6 +575,29 @@ export default async function ProtectedPage() {
                   {post.content}
                 </p>
 
+                {post.post_type === "poll" &&
+  post.polls?.[0] && (
+    <Poll
+      pollId={post.polls[0].id}
+      question={post.polls[0].question}
+      currentUserId={user.id}
+      options={post.polls[0].poll_options
+        .sort((a, b) => a.position - b.position)
+        .map((option) => ({
+          id: option.id,
+          option_text: option.option_text,
+          vote_count: option.poll_votes?.length ?? 0,
+        }))}
+      currentVoteOptionId={
+        post.polls[0].poll_options.find((option) =>
+          option.poll_votes?.some(
+            (vote) => vote.user_id === user.id
+          )
+        )?.id ?? null
+      }
+    />
+  )}
+                
                 {post.image_url && (
                   <img
                     src={post.image_url}
