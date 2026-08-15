@@ -10,7 +10,7 @@ export default function ProtectedLayout({
 }) {
   return (
     <main className="min-h-screen w-full bg-[#F5F7FA] text-[#0B1F3A]">
-      <div className="mx-auto flex max-w-7xl gap-8 px-4 py-8">
+      <div className="mx-auto flex max-w-7xl gap-8">
 
         {/* Left sidebar */}
         <Sidebar />
