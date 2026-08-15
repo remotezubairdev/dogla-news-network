@@ -30,21 +30,13 @@ export default function NotificationsBell({ userId }: Props) {
 
       const { data, error } = await supabase
         .from("notifications")
-        .select(
-          "id, type, read, created_at, actor_id"
-        )
+        .select("id, type, read, created_at, actor_id")
         .eq("recipient_id", userId)
-        .order("created_at", {
-          ascending: false,
-        })
+        .order("created_at", { ascending: false })
         .limit(30);
 
       if (error) {
-        console.error(
-          "Failed to load notifications:",
-          error
-        );
-
+        console.error("Failed to load notifications:", error);
         setLoading(false);
         return;
       }
@@ -70,10 +62,7 @@ export default function NotificationsBell({ userId }: Props) {
       .eq("read", false);
 
     if (error) {
-      console.error(
-        "Failed to mark notifications read:",
-        error
-      );
+      console.error("Failed to mark notifications read:", error);
       return;
     }
 
@@ -106,14 +95,20 @@ export default function NotificationsBell({ userId }: Props) {
 
   return (
     <div className="relative">
+      {/* Bell button */}
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label="Notifications"
-        className="relative flex h-10 w-10 items-center justify-center rounded-xl transition hover:bg-white/10"
+        aria-expanded={open}
+        className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition active:scale-95 ${
+          open
+            ? "bg-[#0B1F3A] text-white"
+            : "text-[#0B1F3A] hover:bg-slate-100"
+        }`}
       >
         <svg
-          className="h-5 w-5 text-white"
+          className="h-5 w-5"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -127,115 +122,144 @@ export default function NotificationsBell({ userId }: Props) {
         </svg>
 
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white shadow-sm">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div
-  className="
-    absolute
-    right-0
-    z-[100]
-    mt-3
-    w-[calc(100vw-2rem)]
-    max-w-[360px]
-    overflow-hidden
-    rounded-2xl
-    border
-    border-slate-200
-    bg-white
-    text-slate-900
-    shadow-2xl
-    sm:w-[360px]
-  "
->
-          <div className="flex items-center justify-between bg-[#0B1F3A] px-4 py-4 text-white">
-            <div>
-              <p className="text-sm font-black">
-                Notifications
-              </p>
+        <>
+          {/* Mobile backdrop */}
+          <button
+            type="button"
+            aria-label="Close notifications"
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-[90] bg-black/20 md:hidden"
+          />
 
-              <p className="text-[10px] font-bold uppercase tracking-widest text-blue-200">
-                Dogla activity
-              </p>
+          {/* Notification panel */}
+          <div
+            className="
+              fixed
+              bottom-[76px]
+              left-3
+              right-3
+              z-[100]
+              max-h-[70vh]
+              overflow-hidden
+              rounded-2xl
+              border
+              border-slate-200
+              bg-white
+              text-slate-900
+              shadow-2xl
+              sm:left-auto
+              sm:right-4
+              sm:w-[360px]
+              md:absolute
+              md:bottom-auto
+              md:left-auto
+              md:right-0
+              md:top-full
+              md:mt-3
+              md:max-h-[70vh]
+              md:w-[360px]
+            "
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between bg-[#0B1F3A] px-4 py-4 text-white">
+              <div>
+                <p className="text-sm font-black">
+                  Notifications
+                </p>
+
+                <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-blue-200">
+                  Dogla activity
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {unreadCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={markAllRead}
+                    className="rounded-lg bg-white/10 px-3 py-2 text-[10px] font-bold transition hover:bg-white/20"
+                  >
+                    Mark all read
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-lg transition hover:bg-white/20"
+                  aria-label="Close notifications"
+                >
+                  ×
+                </button>
+              </div>
             </div>
 
-            {unreadCount > 0 && (
-              <button
-                type="button"
-                onClick={markAllRead}
-                className="rounded-lg bg-white/10 px-3 py-2 text-[10px] font-bold hover:bg-white/20"
-              >
-                Mark all read
-              </button>
-            )}
-          </div>
-
-          <div className="max-h-[400px] overflow-y-auto">
-            {loading ? (
-              <div className="px-5 py-10 text-center text-sm text-slate-400">
-                Loading notifications...
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="px-5 py-10 text-center">
-                <div className="mb-3 text-3xl">
-                  🔔
+            {/* Content */}
+            <div className="max-h-[calc(70vh-76px)] overflow-y-auto">
+              {loading ? (
+                <div className="px-5 py-10 text-center text-sm text-slate-400">
+                  Loading notifications...
                 </div>
+              ) : notifications.length === 0 ? (
+                <div className="px-5 py-10 text-center">
+                  <div className="mb-3 text-3xl">🔔</div>
 
-                <p className="text-sm font-bold text-[#0B1F3A]">
-                  No notifications yet
-                </p>
+                  <p className="text-sm font-bold text-[#0B1F3A]">
+                    No notifications yet
+                  </p>
 
-                <p className="mt-1 text-xs text-slate-400">
-                  Likes, comments and follows will appear here.
-                </p>
-              </div>
-            ) : (
-              notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`border-b border-slate-100 px-4 py-4 ${
-                    notification.read
-                      ? "bg-white"
-                      : "bg-blue-50"
-                  }`}
-                >
-                  <div className="flex gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0B1F3A] text-lg">
-                      {notification.type === "like"
-                        ? "❤️"
-                        : notification.type === "comment"
-                          ? "💬"
-                          : notification.type === "follow"
-                            ? "👤"
-                            : notification.type ===
-                                "poll_vote"
-                              ? "📊"
-                              : "🔔"}
-                    </div>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Likes, comments and follows will appear here.
+                  </p>
+                </div>
+              ) : (
+                notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`border-b border-slate-100 px-4 py-4 ${
+                      notification.read
+                        ? "bg-white"
+                        : "bg-blue-50"
+                    }`}
+                  >
+                    <div className="flex gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0B1F3A] text-lg">
+                        {notification.type === "like"
+                          ? "❤️"
+                          : notification.type === "comment"
+                            ? "💬"
+                            : notification.type === "follow"
+                              ? "👤"
+                              : notification.type === "poll_vote"
+                                ? "📊"
+                                : "🔔"}
+                      </div>
 
-                    <div>
-                      <p className="text-sm font-medium text-slate-700">
-                        {notificationText(
-                          notification.type
-                        )}
-                      </p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-slate-700">
+                          {notificationText(notification.type)}
+                        </p>
 
-                      <p className="mt-1 text-[10px] text-slate-400">
-                        {new Date(
-                          notification.created_at
-                        ).toLocaleString()}
-                      </p>
+                        <p className="mt-1 text-[10px] text-slate-400">
+                          {new Date(
+                            notification.created_at
+                          ).toLocaleString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
