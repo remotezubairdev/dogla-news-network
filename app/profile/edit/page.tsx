@@ -87,7 +87,7 @@ const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const {
         data: { publicUrl },
     } = supabase.storage
-        .from("avatars")
+        .from("avatar")
         .getPublicUrl(filePath);
 
     newAvatarUrl = publicUrl;
