@@ -73,7 +73,7 @@ const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
-        .from("avatars")
+        .from("avatar")
         .upload(filePath, avatarFile, {
         upsert: false,
         });
