@@ -249,7 +249,7 @@ export default async function ProtectedPage() {
           username,
           full_name
         )
-      )
+      ),
 
       polls (
   id,
