@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+import Image from "next/image";
 import LikeButton from "@/components/like-button";
 import Link from "next/link";
 import Comments from "@/components/comments";
@@ -474,7 +475,9 @@ export default async function ProtectedPage() {
                 </p>
 
                 {post.image_url && (
-                  <img
+                  <Image
+                    width={350}
+                    height={600}
                     src={post.image_url}
                     alt="Post image"
                     className="mt-4 max-h-[600px] w-full rounded-xl object-cover"
