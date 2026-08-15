@@ -278,6 +278,8 @@ export default async function ProtectedPage() {
       image_url: post.image_url,
       created_at: post.created_at,
       user_id: post.user_id,
+      post_type: post.post_type ?? "report",
+      polls: post.polls ?? null,
 
       profiles: Array.isArray(post.profiles)
         ? post.profiles[0] ?? null
