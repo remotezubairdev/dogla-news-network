@@ -460,7 +460,7 @@ export default async function ProtectedPage() {
         </div>
 
         {/* CREATE POST */}
-        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div id="create" className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-5">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
