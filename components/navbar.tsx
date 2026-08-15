@@ -90,7 +90,7 @@ export default function Navbar() {
 
           {/* Mobile actions */}
           <div className="flex items-center gap-1 md:hidden">
-            {userId && <NotificationsBell userId={userId} />}
+           {/* {userId && <NotificationsBell userId={userId} />} */}
 
             <button
               type="button"
