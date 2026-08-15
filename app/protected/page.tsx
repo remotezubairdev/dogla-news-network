@@ -212,6 +212,7 @@ export default async function ProtectedPage() {
       image_url,
       created_at,
       user_id,
+      post_type,
 
       profiles!posts_user_id_fkey (
         id,
