@@ -228,7 +228,7 @@ export default function Navbar() {
 
     {/* Create */}
     <Link
-      href="/protected?create=true"
+      href="/protected#create"
       className="flex h-12 w-12 -translate-y-3 items-center justify-center rounded-2xl bg-[#0B1F3A] text-white shadow-lg transition active:scale-90"
       aria-label="Create post"
     >
