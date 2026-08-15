@@ -234,6 +234,20 @@ export default async function ProtectedPage() {
           full_name
         )
       )
+
+      polls (
+  id,
+  question,
+  poll_options (
+    id,
+    option_text,
+    position,
+    poll_votes (
+      id,
+      user_id
+    )
+  )
+),
     `)
     .order("created_at", { ascending: false })
     .limit(10);
