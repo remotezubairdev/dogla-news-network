@@ -16,9 +16,12 @@ async function createPost(formData: FormData) {
   "use server";
 
   const content = formData.get("content")?.toString().trim();
+  const postType =
+    formData.get("post_type")?.toString() || "report";
+
   const image = formData.get("image") as File | null;
 
-  if (!content && (!image || image.size === 0)) {
+  if (!content) {
     return;
   }
 
@@ -32,34 +35,103 @@ async function createPost(formData: FormData) {
     redirect("/auth/login");
   }
 
+  // -------------------------
+  // POLL
+  // -------------------------
+
+  if (postType === "poll") {
+    const rawOptions = formData.get("poll_options")?.toString();
+
+    if (!rawOptions) {
+      return;
+    }
+
+    let pollOptions: string[];
+
+    try {
+      pollOptions = JSON.parse(rawOptions);
+    } catch {
+      return;
+    }
+
+    pollOptions = pollOptions
+      .map((option) => option.trim())
+      .filter(Boolean)
+      .slice(0, 4);
+
+    if (pollOptions.length < 2) {
+      return;
+    }
+
+    const { data: post, error: postError } = await supabase
+      .from("posts")
+      .insert({
+        user_id: user.id,
+        content,
+        image_url: null,
+        post_type: "poll",
+      })
+      .select("id")
+      .single();
+
+    if (postError || !post) {
+      console.error("POLL POST ERROR:", postError);
+      return;
+    }
+
+    const { data: poll, error: pollError } = await supabase
+      .from("polls")
+      .insert({
+        post_id: post.id,
+        question: content,
+      })
+      .select("id")
+      .single();
+
+    if (pollError || !poll) {
+      console.error("POLL ERROR:", pollError);
+      return;
+    }
+
+    const { error: optionsError } = await supabase
+      .from("poll_options")
+      .insert(
+        pollOptions.map((option, index) => ({
+          poll_id: poll.id,
+          option_text: option,
+          position: index,
+        }))
+      );
+
+    if (optionsError) {
+      console.error("POLL OPTIONS ERROR:", optionsError);
+      return;
+    }
+
+    revalidatePath("/protected");
+    return;
+  }
+
+  // -------------------------
+  // NORMAL REPORT
+  // -------------------------
+
   let imageUrl: string | null = null;
 
   if (image && image.size > 0) {
-    // Get a proper extension from the MIME type
-    const mimeType = image.type || "image/jpeg";
-
-    const extensionMap: Record<string, string> = {
-      "image/jpeg": "jpg",
-      "image/jpg": "jpg",
-      "image/png": "png",
-      "image/webp": "webp",
-      "image/gif": "gif",
-      "image/avif": "avif",
-    };
-
-    const extension = extensionMap[mimeType] || "jpg";
+    const extension = image.name.split(".").pop();
 
     const filePath = `${user.id}/${crypto.randomUUID()}.${extension}`;
 
     const { error: uploadError } = await supabase.storage
       .from("post-images")
       .upload(filePath, image, {
-        contentType: mimeType,
+        contentType: image.type,
         upsert: false,
       });
 
     if (uploadError) {
-      console.error("IMAGE UPLOAD ERROR:", uploadError);
+      console.error(uploadError);
       return;
     }
 
@@ -72,14 +144,17 @@ async function createPost(formData: FormData) {
     imageUrl = publicUrl;
   }
 
-  const { error } = await supabase.from("posts").insert({
-    user_id: user.id,
-    content: content || "",
-    image_url: imageUrl,
-  });
+  const { error } = await supabase
+    .from("posts")
+    .insert({
+      user_id: user.id,
+      content,
+      image_url: imageUrl,
+      post_type: "report",
+    });
 
   if (error) {
-    console.error("POST INSERT ERROR:", error);
+    console.error(error);
     return;
   }
 
