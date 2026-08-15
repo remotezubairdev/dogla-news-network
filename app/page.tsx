@@ -70,7 +70,7 @@ export default async function HomePage() {
               </Link>
 
               <Link
-                href="/explore"
+                href="/protected"
                 className="rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-center text-sm font-bold text-[#0B1F3A] transition hover:bg-slate-50"
               >
                 Explore stories
