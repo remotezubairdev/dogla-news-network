@@ -406,7 +406,7 @@ export default async function ProtectedPage() {
               <div className="border-b border-slate-100 px-6 py-4">
                 <div className="flex items-center gap-3">
                   {/* Avatar */}
-                  <Link href={`/profiles/${post.profiles?.id}`}>
+                  <Link href={`/profile/${post.profiles?.id}`}>
                     {post.profiles?.avatar_url ? (
                       <Image
                         width={11}
