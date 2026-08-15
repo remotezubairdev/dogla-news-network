@@ -409,8 +409,8 @@ export default async function ProtectedPage() {
                   <Link href={`/profile/${post.profiles?.id}`}>
                     {post.profiles?.avatar_url ? (
                       <Image
-                        width={11}
-                        height={11}
+                        width={44}
+                        height={44}
                         src={post.profiles.avatar_url}
                         alt=""
                         className="h-11 w-11 rounded-full object-cover"
