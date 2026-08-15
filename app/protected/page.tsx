@@ -313,7 +313,7 @@ export default async function ProtectedPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#F5F7FA] text-[#0B1F3A]">
+    <main className="pb-24 md:pb-0 min-h-screen bg-[#F5F7FA] text-[#0B1F3A]">
       <Navbar />
 
       <RefreshFeedBanner />
