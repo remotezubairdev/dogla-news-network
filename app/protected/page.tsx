@@ -221,52 +221,52 @@ export default async function ProtectedPage() {
   }
 
   const { data: posts, error } = await supabase
-    .from("posts")
-    .select(`
+  .from("posts")
+  .select(`
+    id,
+    content,
+    image_url,
+    created_at,
+    user_id,
+    post_type,
+
+    profiles!posts_user_id_fkey (
+      id,
+      username,
+      full_name,
+      avatar_url
+    ),
+
+    likes (
+      user_id
+    ),
+
+    comments (
       id,
       content,
-      image_url,
-      created_at,
       user_id,
-      post_type,
-
-      profiles!posts_user_id_fkey (
-        id,
+      profiles!comments_user_id_fkey (
         username,
-        full_name,
-        avatar_url
-      ),
+        full_name
+      )
+    ),
 
-      likes (
-        user_id
-      ),
-
-      comments (
-        id,
-        content,
-        user_id,
-        profiles!comments_user_id_fkey (
-          username,
-          full_name
-        )
-      ),
-
-      polls (
-  id,
-  question,
-  poll_options (
-    id,
-    option_text,
-    position,
-    poll_votes (
+    polls (
       id,
-      user_id
+      question,
+      poll_options (
+        id,
+        option_text,
+        position,
+        poll_votes (
+          id,
+          user_id
+        )
+      )
     )
-  )
-),
-    `)
-    .order("created_at", { ascending: false })
-    .limit(10);
+  `)
+  .order("created_at", { ascending: false })
+  .limit(10);
 
   if (error) {
     console.error("POSTS ERROR:", error);
