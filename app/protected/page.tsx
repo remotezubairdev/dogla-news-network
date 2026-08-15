@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+import Poll from "@/components/poll";
 import RefreshFeedBanner from "@/components/refresh-feed-banner";
 import Image from "next/image";
 import LikeButton from "@/components/like-button";
@@ -16,9 +17,12 @@ async function createPost(formData: FormData) {
   "use server";
 
   const content = formData.get("content")?.toString().trim();
+  const postType =
+    formData.get("post_type")?.toString() || "report";
+
   const image = formData.get("image") as File | null;
 
-  if (!content && (!image || image.size === 0)) {
+  if (!content) {
     return;
   }
 
@@ -32,34 +36,103 @@ async function createPost(formData: FormData) {
     redirect("/auth/login");
   }
 
+  // -------------------------
+  // POLL
+  // -------------------------
+
+  if (postType === "poll") {
+    const rawOptions = formData.get("poll_options")?.toString();
+
+    if (!rawOptions) {
+      return;
+    }
+
+    let pollOptions: string[];
+
+    try {
+      pollOptions = JSON.parse(rawOptions);
+    } catch {
+      return;
+    }
+
+    pollOptions = pollOptions
+      .map((option) => option.trim())
+      .filter(Boolean)
+      .slice(0, 4);
+
+    if (pollOptions.length < 2) {
+      return;
+    }
+
+    const { data: post, error: postError } = await supabase
+      .from("posts")
+      .insert({
+        user_id: user.id,
+        content,
+        image_url: null,
+        post_type: "poll",
+      })
+      .select("id")
+      .single();
+
+    if (postError || !post) {
+      console.error("POLL POST ERROR:", postError);
+      return;
+    }
+
+    const { data: poll, error: pollError } = await supabase
+      .from("polls")
+      .insert({
+        post_id: post.id,
+        question: content,
+      })
+      .select("id")
+      .single();
+
+    if (pollError || !poll) {
+      console.error("POLL ERROR:", pollError);
+      return;
+    }
+
+    const { error: optionsError } = await supabase
+      .from("poll_options")
+      .insert(
+        pollOptions.map((option, index) => ({
+          poll_id: poll.id,
+          option_text: option,
+          position: index,
+        }))
+      );
+
+    if (optionsError) {
+      console.error("POLL OPTIONS ERROR:", optionsError);
+      return;
+    }
+
+    revalidatePath("/protected");
+    return;
+  }
+
+  // -------------------------
+  // NORMAL REPORT
+  // -------------------------
+
   let imageUrl: string | null = null;
 
   if (image && image.size > 0) {
-    // Get a proper extension from the MIME type
-    const mimeType = image.type || "image/jpeg";
-
-    const extensionMap: Record<string, string> = {
-      "image/jpeg": "jpg",
-      "image/jpg": "jpg",
-      "image/png": "png",
-      "image/webp": "webp",
-      "image/gif": "gif",
-      "image/avif": "avif",
-    };
-
-    const extension = extensionMap[mimeType] || "jpg";
+    const extension = image.name.split(".").pop();
 
     const filePath = `${user.id}/${crypto.randomUUID()}.${extension}`;
 
     const { error: uploadError } = await supabase.storage
       .from("post-images")
       .upload(filePath, image, {
-        contentType: mimeType,
+        contentType: image.type,
         upsert: false,
       });
 
     if (uploadError) {
-      console.error("IMAGE UPLOAD ERROR:", uploadError);
+      console.error(uploadError);
       return;
     }
 
@@ -72,14 +145,17 @@ async function createPost(formData: FormData) {
     imageUrl = publicUrl;
   }
 
-  const { error } = await supabase.from("posts").insert({
-    user_id: user.id,
-    content: content || "",
-    image_url: imageUrl,
-  });
+  const { error } = await supabase
+    .from("posts")
+    .insert({
+      user_id: user.id,
+      content,
+      image_url: imageUrl,
+      post_type: "report",
+    });
 
   if (error) {
-    console.error("POST INSERT ERROR:", error);
+    console.error(error);
     return;
   }
 
@@ -116,6 +192,21 @@ type PostData = {
     user_id: string;
   }[];
   comments: CommentData[];
+  post_type: "report" | "poll";
+
+polls: {
+  id: string;
+  question: string;
+  poll_options: {
+    id: string;
+    option_text: string;
+    position: number;
+    poll_votes: {
+      id: string;
+      user_id: string;
+    }[];
+  }[];
+}[] | null;
 };
 
 export default async function ProtectedPage() {
@@ -137,6 +228,7 @@ export default async function ProtectedPage() {
       image_url,
       created_at,
       user_id,
+      post_type,
 
       profiles!posts_user_id_fkey (
         id,
@@ -158,6 +250,20 @@ export default async function ProtectedPage() {
           full_name
         )
       )
+
+      polls (
+  id,
+  question,
+  poll_options (
+    id,
+    option_text,
+    position,
+    poll_votes (
+      id,
+      user_id
+    )
+  )
+),
     `)
     .order("created_at", { ascending: false })
     .limit(10);
@@ -173,6 +279,8 @@ export default async function ProtectedPage() {
       image_url: post.image_url,
       created_at: post.created_at,
       user_id: post.user_id,
+      post_type: post.post_type ?? "report",
+      polls: post.polls ?? null,
 
       profiles: Array.isArray(post.profiles)
         ? post.profiles[0] ?? null
@@ -467,6 +575,29 @@ export default async function ProtectedPage() {
                   {post.content}
                 </p>
 
+                {post.post_type === "poll" &&
+  post.polls?.[0] && (
+    <Poll
+      pollId={post.polls[0].id}
+      question={post.polls[0].question}
+      currentUserId={user.id}
+      options={post.polls[0].poll_options
+        .sort((a, b) => a.position - b.position)
+        .map((option) => ({
+          id: option.id,
+          option_text: option.option_text,
+          vote_count: option.poll_votes?.length ?? 0,
+        }))}
+      currentVoteOptionId={
+        post.polls[0].poll_options.find((option) =>
+          option.poll_votes?.some(
+            (vote) => vote.user_id === user.id
+          )
+        )?.id ?? null
+      }
+    />
+  )}
+                
                 {post.image_url && (
                   <img
                     src={post.image_url}
