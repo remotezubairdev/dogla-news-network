@@ -272,6 +272,36 @@ export default async function ProtectedPage() {
     console.error("POSTS ERROR:", error);
   }
 
+  const postIds = (posts ?? []).map((post) => post.id);
+
+let polls = [];
+
+if (postIds.length > 0) {
+  const { data: pollData, error: pollError } = await supabase
+    .from("polls")
+    .select(`
+      id,
+      post_id,
+      question,
+      poll_options (
+        id,
+        option_text,
+        position,
+        poll_votes (
+          id,
+          user_id
+        )
+      )
+    `)
+    .in("post_id", postIds);
+
+  if (pollError) {
+    console.error("POLL ERROR:", pollError);
+  }
+
+  polls = pollData ?? [];
+}
+
   const normalizedPosts: PostData[] = (posts ?? []).map(
     (post): PostData => ({
       id: post.id,
@@ -280,7 +310,7 @@ export default async function ProtectedPage() {
       created_at: post.created_at,
       user_id: post.user_id,
       post_type: post.post_type ?? "report",
-      polls: post.polls ?? null,
+      polls: polls.filter((poll) => poll.post_id === post.id),
 
       profiles: Array.isArray(post.profiles)
         ? post.profiles[0] ?? null
