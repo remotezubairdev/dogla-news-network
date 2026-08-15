@@ -134,7 +134,24 @@ export default function NotificationsBell({ userId }: Props) {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-[100] mt-3 w-[min(92vw,360px)] overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl">
+        <div
+  className="
+    absolute
+    right-0
+    z-[100]
+    mt-3
+    w-[calc(100vw-2rem)]
+    max-w-[360px]
+    overflow-hidden
+    rounded-2xl
+    border
+    border-slate-200
+    bg-white
+    text-slate-900
+    shadow-2xl
+    sm:w-[360px]
+  "
+>
           <div className="flex items-center justify-between bg-[#0B1F3A] px-4 py-4 text-white">
             <div>
               <p className="text-sm font-black">
