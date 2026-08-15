@@ -48,7 +48,7 @@ export default function Navbar() {
             className="flex items-center gap-2.5"
           >
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-[10px] font-black tracking-tight text-[#0B1F3A] sm:h-10 sm:w-10 sm:text-xs">
-              DN
+              DNN
             </div>
 
             <div className="leading-none">
