@@ -346,8 +346,6 @@ if (postIds.length > 0) {
     <main className="px-8 py-4 pb-24 md:pb-0 min-h-screen bg-[#F5F7FA] text-[#0B1F3A]">
       <Navbar />
 
-      <RefreshFeedBanner />
-
       {/* BREAKING NEWS TICKER */}
       <div className="w-full overflow-hidden border-b border-red-200 bg-red-600 text-white">
         <div className="flex h-9 items-center">
@@ -528,6 +526,8 @@ if (postIds.length > 0) {
             DNN FEED
           </span>
         </div>
+
+        <RefreshFeedBanner />
 
         {/* FEED */}
         <div className="space-y-4">
